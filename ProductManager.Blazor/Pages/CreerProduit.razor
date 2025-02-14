@@ -1,0 +1,48 @@
+﻿@inject IProduitRepository produitRepository
+@inject NavigationManager navigation
+
+@page "/produits/creer"
+
+<h3>Créer Produit</h3>
+
+@if(_message is not null)
+{
+    <h3 class="text-danger">@_message</h3>
+}
+
+<EditForm Model="Form" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div>
+        <label for="Nom">Nom :</label>
+        <InputText id="Nom" @bind-Value="Form.Nom" class="form-control" />
+        <ValidationMessage For="() => Form.Nom" />
+    </div>
+    <div>
+        <label for="Prix">Prix :</label>
+        <InputNumber id="Prix" @bind-Value="Form.Prix" class="form-control" />
+        <ValidationMessage For="() => Form.Prix" />
+    </div>
+    <div>
+        <input type="submit" value="Créer" />
+    </div>
+</EditForm>
+
+@code {
+    private AjoutProduitForm Form { get; }
+    private string? _message = null;
+
+    public CreerProduit()
+    {
+        Form = new AjoutProduitForm();
+    }
+
+    public async void OnValidSubmit()
+    {
+        bool result = await produitRepository.Create(new Produit(Form.Nom, Form.Prix));
+
+        if (result)
+            navigation.NavigateTo("/produits");
+        else
+            _message = "Quelque chose s'est mal passé...";
+    }
+}

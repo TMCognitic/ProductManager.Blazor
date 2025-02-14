@@ -1,0 +1,35 @@
+﻿@inject IProduitRepository produitRepository;
+
+@page "/produits/detail/{Id:int}"
+
+<a href="/produits" class="btn btn-primary btn-sm active">Retour à la liste</a>
+
+@if(_state is States.Loading)
+{
+    <h3>Chargement...</h3>
+}
+else if(_produit is null)
+{
+    <h3>Il semble que le produit soit introuvable, veuillez retourner à la liste et réessayer...</h3>
+}
+else
+{
+    <h3>Id : @_produit.Id</h3>
+    <h3>Nom : @_produit.Nom</h3>
+    <h3>Prix : @_produit.Prix</h3>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Produit? _produit;
+    private States _state = States.Loading;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _produit = await produitRepository.Get(Id);
+        _state = States.Completed;
+    }
+}

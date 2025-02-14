@@ -1,0 +1,75 @@
+﻿@inject IProduitRepository produitRepository;
+@inject NavigationManager navigation
+
+@page "/produits/edit/{Id:int}"
+
+<h3>Modifier un Produit</h3>
+
+@if (_message is not null)
+{
+    <h3 class="text-danger">@_message</h3>
+}
+
+<EditForm Model="Form" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div>
+        <label for="Nom">Nom :</label>
+        <InputText id="Nom" @bind-Value="Form.Nom" class="form-control" />
+        <ValidationMessage For="() => Form.Nom" />
+    </div>
+    <div>
+        <label for="Prix">Prix :</label>
+        <InputNumber id="Prix" @bind-Value="Form.Prix" class="form-control" />
+        <ValidationMessage For="() => Form.Prix" />
+    </div>
+    <div>
+        <input type="submit" value="Modifier" class="btn btn-primary" /> | 
+        <button class="btn btn-secondary" @onclick="OnCancel">Annuler</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Produit? _produit;
+    private States _state = States.Loading;
+
+    private ModifieProduitForm Form { get; }
+    private string? _message = null;
+
+    public EditProduit()
+    {
+        Form = new ModifieProduitForm();
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _produit = await produitRepository.Get(Id);
+
+        if (_produit is null)
+        {
+            navigation.NavigateTo("/produits");
+            return;
+        }
+
+        Form.Nom = _produit.Nom;
+        Form.Prix = _produit.Prix;
+    }
+
+    private async void OnValidSubmit()
+    {
+        bool result = await produitRepository.Update(Id, new Produit(Form.Nom, Form.Prix));
+
+        if (result)
+            navigation.NavigateTo("/produits");
+        else
+            _message = "Quelque chose s'est mal passé...";
+    }
+
+    private void OnCancel()
+    {
+        navigation.NavigateTo("/produits");
+    }
+}

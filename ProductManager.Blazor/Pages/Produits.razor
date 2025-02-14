@@ -1,0 +1,49 @@
+﻿@inject IProduitRepository produitRepository;
+@page "/produits"
+
+<h3>Produits</h3>
+
+<a href="/produits/creer" class="btn btn-primary btn-sm active">Nouveau Produit</a>
+
+@if(_produits is not null)
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr class="">
+                <th scope="col">Id</th>
+                <th scope="col">Nom</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Produit produit in _produits)
+            {
+                <tr>
+                    <th scope="row">@produit.Id</th>
+                    <td>@produit.Nom</td>
+                    <td><a href="/produits/detail/@(produit.Id)" class="btn btn-primary btn-sm active">Détails</a> | 
+                        <a href="/produits/edit/@(produit.Id)" class="btn btn-secondary btn-sm active">Editer</a> | 
+                        <a @onclick="() => OnDelete(produit)" class="btn btn-danger btn-sm active">Supprimer</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ICollection<Produit>? _produits;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _produits = (await produitRepository.Get()).ToList();
+    }
+
+    public async Task OnDelete(Produit produit)
+    {
+        _produits!.Remove(produit);
+
+        await produitRepository.Delete(produit.Id);
+    }
+}
