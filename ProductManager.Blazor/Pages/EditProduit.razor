@@ -46,7 +46,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _produit = await produitRepository.Get(Id);
+        _produit = await produitRepository.Execute(new DetailProduitQuery(Id));
 
         if (_produit is null)
         {
@@ -60,7 +60,7 @@
 
     private async void OnValidSubmit()
     {
-        bool result = await produitRepository.Update(Id, new Produit(Form.Nom, Form.Prix));
+        bool result = await produitRepository.Execute(new ModifierProduitCommand(Id, Form.Nom, Form.Prix));
 
         if (result)
             navigation.NavigateTo("/produits");

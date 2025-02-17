@@ -37,13 +37,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _produits = (await produitRepository.Get()).ToList();
+        _produits = (await produitRepository.Execute(new ListeProduitQuery())).ToList();
     }
 
     public async Task OnDelete(Produit produit)
     {
         _produits!.Remove(produit);
 
-        await produitRepository.Delete(produit.Id);
+        await produitRepository.Execute(new SupprimerProduitCommand(produit.Id));
     }
 }

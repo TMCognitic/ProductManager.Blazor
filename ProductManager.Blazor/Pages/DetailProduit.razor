@@ -29,7 +29,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _produit = await produitRepository.Get(Id);
+        _produit = await produitRepository.Execute(new DetailProduitQuery(Id));
         _state = States.Completed;
     }
 }

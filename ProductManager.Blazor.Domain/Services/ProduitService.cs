@@ -1,15 +1,11 @@
-﻿using ProductManager.Blazor.Dal.Entities;
-using ProductManager.Blazor.Dal.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ProductManager.Blazor.Domain.Commands;
+using ProductManager.Blazor.Domain.Entities;
+using ProductManager.Blazor.Domain.Queries;
+using ProductManager.Blazor.Domain.Repositories;
 using System.Net.Http.Json;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace ProductManager.Blazor.Dal.Services
+namespace ProductManager.Blazor.Domain.Services
 {
     public class ProduitService : IProduitRepository
     {
@@ -20,17 +16,7 @@ namespace ProductManager.Blazor.Dal.Services
             _httpClient = httpClientFactory.CreateClient("Default");
         }
 
-        public async Task<bool> Create(Produit produit)
-        {
-            HttpContent httpContent = JsonContent.Create(new { produit.Nom, produit.Prix });
-
-            using (HttpResponseMessage responseMessage = await _httpClient.PostAsync("api/produit", httpContent))
-            {
-                return responseMessage.IsSuccessStatusCode;
-            }
-        }
-
-        public async Task<IEnumerable<Produit>> Get()
+        public async Task<IEnumerable<Produit>> Execute(ListeProduitQuery query)
         {
             using (HttpResponseMessage responseMessage = await _httpClient.GetAsync("api/produit"))
             {
@@ -40,18 +26,18 @@ namespace ProductManager.Blazor.Dal.Services
 
                 Produit[]? produits = JsonSerializer.Deserialize<Produit[]>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
-                if(produits is null)
+                if (produits is null)
                     return Enumerable.Empty<Produit>();
 
                 return produits;
             }
         }
 
-        public async Task<Produit?> Get(int id)
+        public async Task<Produit?> Execute(DetailProduitQuery query)
         {
-            using (HttpResponseMessage responseMessage = await _httpClient.GetAsync($"api/produit/{id}"))
+            using (HttpResponseMessage responseMessage = await _httpClient.GetAsync($"api/produit/{query.Id}"))
             {
-                if(!responseMessage.IsSuccessStatusCode)
+                if (!responseMessage.IsSuccessStatusCode)
                 {
                     return null;
                 }
@@ -64,19 +50,29 @@ namespace ProductManager.Blazor.Dal.Services
             }
         }
 
-        public async Task<bool> Update(Produit produit)
+        public async Task<bool> Execute(AjoutProduitCommand command)
         {
-            HttpContent httpContent = JsonContent.Create(new { produit.Nom, produit.Prix });
+            HttpContent httpContent = JsonContent.Create(command);
 
-            using (HttpResponseMessage responseMessage = await _httpClient.PutAsync($"api/produit/{produit.Id}", httpContent))
+            using (HttpResponseMessage responseMessage = await _httpClient.PostAsync("api/produit", httpContent))
             {
                 return responseMessage.IsSuccessStatusCode;
             }
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Execute(ModifierProduitCommand command)
         {
-            using (HttpResponseMessage responseMessage = await _httpClient.DeleteAsync($"api/produit/{id}"))
+            HttpContent httpContent = JsonContent.Create(command);
+
+            using (HttpResponseMessage responseMessage = await _httpClient.PutAsync($"api/produit", httpContent))
+            {
+                return responseMessage.IsSuccessStatusCode;
+            }
+        }
+
+        public async Task<bool> Execute(SupprimerProduitCommand command)
+        {
+            using (HttpResponseMessage responseMessage = await _httpClient.DeleteAsync($"api/produit/{command.Id}"))
             {
                 return responseMessage.IsSuccessStatusCode;
             }

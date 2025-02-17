@@ -1,8 +1,5 @@
-using DR = ProductManager.Blazor.Dal.Repositories;
-using DS = ProductManager.Blazor.Dal.Services;
-
-using ProductManager.Blazor.Bll.Repositories;
-using ProductManager.Blazor.Bll.Services;
+using ProductManager.Blazor.Domain.Repositories;
+using ProductManager.Blazor.Domain.Services;
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -17,7 +14,6 @@ builder.Services.AddHttpClient("Default", client =>
     client.BaseAddress = new Uri("https://localhost:7124/");
 });
 
-builder.Services.AddScoped<DR.IProduitRepository, DS.ProduitService>();
 builder.Services.AddScoped<IProduitRepository, ProduitService>();
 
 
