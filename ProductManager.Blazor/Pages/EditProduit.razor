@@ -1,4 +1,5 @@
-﻿@inject IProduitRepository produitRepository;
+﻿@inject ILogger<EditProduit> logger
+@inject IProduitRepository produitRepository
 @inject NavigationManager navigation
 
 @page "/produits/edit/{Id:int}"
@@ -32,9 +33,6 @@
     [Parameter]
     public int Id { get; set; }
 
-    private Produit? _produit;
-    private States _state = States.Loading;
-
     private ModifieProduitForm Form { get; }
     private string? _message = null;
 
@@ -46,26 +44,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _produit = await produitRepository.Execute(new DetailProduitQuery(Id));
+        Result<Produit> queryResult = await produitRepository.ExecuteAsync(new DetailProduitQuery(Id));
 
-        if (_produit is null)
+        if (queryResult.IsFailure)
         {
             navigation.NavigateTo("/produits");
             return;
         }
 
-        Form.Nom = _produit.Nom;
-        Form.Prix = _produit.Prix;
+        Form.Nom = queryResult.Content.Nom;
+        Form.Prix = queryResult.Content.Prix;
     }
 
     private async void OnValidSubmit()
     {
-        CommandResult result = await produitRepository.Execute(new ModifierProduitCommand(Id, Form.Nom, Form.Prix));
+        Result result = await produitRepository.ExecuteAsync(new ModifierProduitCommand(Id, Form.Nom, Form.Prix));
 
-        if (result.IsSuccess)
-            navigation.NavigateTo("/produits");
-        else
-            _message = "Quelque chose s'est mal passé...";
+        if (result.IsFailure)
+            logger.LogError($"Error : {result.ErrorMessage}");
+        
+        navigation.NavigateTo("/produits");
     }
 
     private void OnCancel()

@@ -1,4 +1,4 @@
-﻿using Tools.CommandQuerySeparation.Commands;
+﻿using CommandQuerySeparation.Commands;
 
 namespace ProductManager.Blazor.Domain.Commands
 {

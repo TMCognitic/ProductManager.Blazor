@@ -35,24 +35,24 @@
 @code {
     private ICollection<Produit>? _produits;
 
-
     protected override async Task OnInitializedAsync()
     {
-        var result = await produitRepository.Execute(new ListeProduitQuery());
+        Result<IEnumerable<Produit>> queryResult = await produitRepository.ExecuteAsync(new ListeProduitQuery());
 
-        if(result.IsFailure)
+        if (queryResult.IsFailure)
         {
+            logger.LogError($"Error : {queryResult.ErrorMessage}");
             return;
         }
 
-        _produits = result.Result.ToList();
+        _produits = queryResult.Content.ToList();
     }
 
     public async Task OnDelete(Produit produit)
     {
         _produits!.Remove(produit);
 
-        CommandResult result = await produitRepository.Execute(new SupprimerProduitCommand(produit.Id + 1));
+        Result result = await produitRepository.ExecuteAsync(new SupprimerProduitCommand(produit.Id));
 
         if(result.IsFailure)
             logger.LogError(result.ErrorMessage);

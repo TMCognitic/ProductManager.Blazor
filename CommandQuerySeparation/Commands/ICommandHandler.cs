@@ -1,8 +1,10 @@
-﻿namespace CommandQuerySeparation.Commands
+﻿using CommandQuerySeparation.Results;
+
+namespace CommandQuerySeparation.Commands
 {
     public interface ICommandHandler<TCommand>
         where TCommand : ICommandDefinition
     {
-        bool Execute(TCommand command);
+        Result Execute(TCommand command);
     }
 }

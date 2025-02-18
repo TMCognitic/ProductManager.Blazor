@@ -1,8 +1,10 @@
-﻿namespace CommandQuerySeparation.Queries
+﻿using CommandQuerySeparation.Results;
+
+namespace CommandQuerySeparation.Queries
 {
     public interface IQueryHandler<TQuery, TResult>
         where TQuery : IQueryDefinition<TResult>
     {
-        TResult Execute(TQuery query);
+        Result<TResult> Execute(TQuery query);
     }
 }

@@ -1,12 +1,10 @@
-﻿using ProductManager.Blazor.Domain.Commands;
+﻿using CommandQuerySeparation.Results;
+using ProductManager.Blazor.Domain.Commands;
 using ProductManager.Blazor.Domain.Entities;
 using ProductManager.Blazor.Domain.Queries;
 using ProductManager.Blazor.Domain.Repositories;
-using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Tools.CommandQuerySeparation.Commands;
-using Tools.CommandQuerySeparation.Queries;
 
 namespace ProductManager.Blazor.Domain.Services
 {
@@ -19,7 +17,7 @@ namespace ProductManager.Blazor.Domain.Services
             _httpClient = httpClientFactory.CreateClient("Default");
         }
 
-        public async Task<QueryResult<IEnumerable<Produit>>> Execute(ListeProduitQuery query)
+        public async Task<Result<IEnumerable<Produit>>> ExecuteAsync(ListeProduitQuery query)
         {
             try
             {
@@ -27,7 +25,7 @@ namespace ProductManager.Blazor.Domain.Services
                 {
                     if (!responseMessage.IsSuccessStatusCode)
                     {
-                        return QueryResult<IEnumerable<Produit>>.Failure($"Code de l'api : {(int)responseMessage.StatusCode}");
+                        return Result<IEnumerable<Produit>>.Failure($"Code de l'api : {(int)responseMessage.StatusCode}");
                     }
 
                     string json = await responseMessage.Content.ReadAsStringAsync();
@@ -35,19 +33,19 @@ namespace ProductManager.Blazor.Domain.Services
                     Produit[]? produits = JsonSerializer.Deserialize<Produit[]>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
                     if (produits is null)
-                        return QueryResult<IEnumerable<Produit>>.Success(Enumerable.Empty<Produit>());
+                        return Result<IEnumerable<Produit>>.Success(Enumerable.Empty<Produit>());
 
-                    return QueryResult<IEnumerable<Produit>>.Success(produits);
+                    return Result<IEnumerable<Produit>>.Success(produits);
                 }
             }
             catch (Exception ex)
             {
 
-                return QueryResult<IEnumerable<Produit>>.Failure(ex.Message, ex);
+                return Result<IEnumerable<Produit>>.Failure(ex.Message, ex);
             }
         }
 
-        public async Task<QueryResult<Produit>> Execute(DetailProduitQuery query)
+        public async Task<Result<Produit>> ExecuteAsync(DetailProduitQuery query)
         {
             try
             {
@@ -55,24 +53,23 @@ namespace ProductManager.Blazor.Domain.Services
                 {
                     if (!responseMessage.IsSuccessStatusCode)
                     {
-                        return QueryResult<Produit>.Failure($"Code de l'api : {(int)responseMessage.StatusCode}");
+                        return Result<Produit>.Failure($"Code de l'api : {(int)responseMessage.StatusCode}");
                     }
 
                     string json = await responseMessage.Content.ReadAsStringAsync();
 
                     Produit produit = JsonSerializer.Deserialize<Produit>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true })!;
 
-                    return QueryResult<Produit>.Success(produit);
+                    return Result<Produit>.Success(produit);
                 }
             }
             catch (Exception ex)
             {
-
-                return QueryResult<Produit>.Failure(ex.Message, ex);
+                return Result<Produit>.Failure(ex.Message, ex);
             }
         }
 
-        public async Task<CommandResult> Execute(AjoutProduitCommand command)
+        public async Task<Result> ExecuteAsync(AjoutProduitCommand command)
         {
             try
             {
@@ -82,19 +79,19 @@ namespace ProductManager.Blazor.Domain.Services
                 {
                     if (responseMessage.IsSuccessStatusCode)
                     {
-                        return CommandResult.Success();
+                        return Result.Success();
                     }
-                    return CommandResult.Failure($"Code de retour : {responseMessage.StatusCode}");
+                    return Result.Failure($"Code de retour : {responseMessage.StatusCode}");
                 }
 
             }
             catch (Exception ex)
             {
-                return CommandResult.Failure(ex.Message, ex);
+                return Result.Failure(ex.Message, ex);
             }
         }
 
-        public async Task<CommandResult> Execute(ModifierProduitCommand command)
+        public async Task<Result> ExecuteAsync(ModifierProduitCommand command)
         {
             try
             {
@@ -104,19 +101,19 @@ namespace ProductManager.Blazor.Domain.Services
                 {
                     if (responseMessage.IsSuccessStatusCode)
                     {
-                        return CommandResult.Success();
+                        return Result.Success();
                     }
-                    return CommandResult.Failure($"Code de retour : {responseMessage.StatusCode}");
+                    return Result.Failure($"Code de retour : {responseMessage.StatusCode}");
                 }
 
             }
             catch (Exception ex)
             {
-                return CommandResult.Failure(ex.Message, ex);
+                return Result.Failure(ex.Message, ex);
             }
         }
 
-        public async Task<CommandResult> Execute(SupprimerProduitCommand command)
+        public async Task<Result> ExecuteAsync(SupprimerProduitCommand command)
         {
             try
             {
@@ -124,15 +121,15 @@ namespace ProductManager.Blazor.Domain.Services
                 {
                     if (responseMessage.IsSuccessStatusCode)
                     {
-                        return CommandResult.Success();
+                        return Result.Success();
                     }
                         
-                    return CommandResult.Failure($"Code de retour : {(int)responseMessage.StatusCode}");
+                    return Result.Failure($"Code de retour : {(int)responseMessage.StatusCode}");
                 }
             }
             catch (Exception ex)
             {
-                return CommandResult.Failure(ex.Message, ex);
+                return Result.Failure(ex.Message, ex);
             }
         }
     }

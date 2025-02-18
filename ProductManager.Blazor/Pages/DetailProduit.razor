@@ -1,4 +1,5 @@
-﻿@inject IProduitRepository produitRepository;
+﻿@inject ILogger<DetailProduit> logger
+@inject IProduitRepository produitRepository
 
 @page "/produits/detail/{Id:int}"
 
@@ -29,7 +30,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _produit = await produitRepository.Execute(new DetailProduitQuery(Id));
+        Result<Produit> queryResult = await produitRepository.ExecuteAsync(new DetailProduitQuery(Id));
+
+        if (queryResult.IsFailure)
+            logger.LogError($"Error : {queryResult.ErrorMessage}");
+        else
+            _produit = queryResult.Content;
+
         _state = States.Completed;
     }
 }
