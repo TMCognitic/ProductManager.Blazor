@@ -1,4 +1,5 @@
 ﻿@inject IProduitRepository produitRepository;
+@inject ILogger<Produits> logger;
 @page "/produits"
 
 <h3>Produits</h3>
@@ -37,13 +38,23 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _produits = (await produitRepository.Execute(new ListeProduitQuery())).ToList();
+        var result = await produitRepository.Execute(new ListeProduitQuery());
+
+        if(result.IsFailure)
+        {
+            return;
+        }
+
+        _produits = result.Result.ToList();
     }
 
     public async Task OnDelete(Produit produit)
     {
         _produits!.Remove(produit);
 
-        await produitRepository.Execute(new SupprimerProduitCommand(produit.Id));
+        CommandResult result = await produitRepository.Execute(new SupprimerProduitCommand(produit.Id + 1));
+
+        if(result.IsFailure)
+            logger.LogError(result.ErrorMessage);
     }
 }

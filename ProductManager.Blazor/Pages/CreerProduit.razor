@@ -38,9 +38,9 @@
 
     public async void OnValidSubmit()
     {
-        bool result = await produitRepository.Execute(new AjoutProduitCommand(Form.Nom, Form.Prix));
+        CommandResult result = await produitRepository.Execute(new AjoutProduitCommand(Form.Nom, Form.Prix));
 
-        if (result)
+        if (result.IsSuccess)
             navigation.NavigateTo("/produits");
         else
             _message = "Quelque chose s'est mal passé...";

@@ -1,8 +1,8 @@
 ﻿namespace CommandQuerySeparation.Queries
 {
-    public interface IQueryHandlerAsync<TQuery, TResult>
+    public interface IQueryAsyncHandler<TQuery, TResult>
         where TQuery : IQueryDefinition<TResult>
     {
-        Task<TResult> Execute(TQuery query);
+        Task<TResult> ExecuteAsync(TQuery query);
     }
 }

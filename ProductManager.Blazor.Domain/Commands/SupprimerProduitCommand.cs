@@ -1,4 +1,4 @@
-﻿using CommandQuerySeparation.Commands;
+﻿using Tools.CommandQuerySeparation.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;

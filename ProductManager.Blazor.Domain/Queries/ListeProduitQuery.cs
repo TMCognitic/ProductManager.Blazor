@@ -1,4 +1,4 @@
-﻿using CommandQuerySeparation.Queries;
+﻿using Tools.CommandQuerySeparation.Queries;
 using ProductManager.Blazor.Domain.Entities;
 
 namespace ProductManager.Blazor.Domain.Queries
